@@ -1,0 +1,60 @@
+Project 2 - Recommendation System API
+Dataset: https://www.kaggle.com/rounakbanik/the-movies-dataset
+
+1. Top 10 trending movies in nation (Demographic based)
+
+POST api/v0/toptrending/{nation}
+
+Description: 
+    nation : 2 letter nation code such as US, UK, VN
+
+HTTP return:
+Content-Type: application/json;charset=utf-8
+
+{
+    "status": "success",
+    "data": [1371, 2150, 2968, 265, 300, 370, 508, 593, 1721, 2959]
+}
+
+
+2. Top 10 similar movies (Content based)
+
+POST api/v0/topsimilar/{movieId}
+
+Description:
+    movieId : movie id
+
+HTTP return: 
+Content-Type: application/json;charset=utf-8
+
+{
+    "status": "success",
+    "data": [48783, 58559, 7153, 1298, 1387, 1917, 7153, 551, 720, 736]
+}
+
+3. Predict user-movie rating score
+
+POST api/v0/rating/{userId}/{movieId}
+
+Description:
+    userId  : user id 
+    movieId : movie id
+
+HTTP return: rating score from 0 -> 1
+Content-Type: application/json;charset=utf-8
+
+{
+    "status": "success",
+    "data": 0.85
+}
+
+
+
+
+
+
+
+
+
+
+
