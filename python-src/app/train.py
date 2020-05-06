@@ -122,7 +122,7 @@ def top10_movies(cat="popular"):
 
 
 def df2api(df):
-    columns=['id', 'imdb_id', 'title', 'vote_count', 'vote_average', 'score']
+    columns=['id', 'imdb_id', 'title', 'vote_count', 'vote_average', 'score', 'director', 'overview', 'genres', 'keywords']
     top10 = []
     for index, row in df.iterrows():
         rec_json = {}
@@ -148,7 +148,7 @@ svd.fit(trainset)
 testset = trainset.build_anti_testset()
 predictions = svd.test(testset)
 
-def get_top_n(predictions, n=20):
+def get_top_n(predictions, n=15):
     top_n = defaultdict(list)
     for uid, iid, true_r, est, _ in predictions:
         top_n[uid].append((iid, est))

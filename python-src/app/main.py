@@ -1,3 +1,6 @@
+from datetime import datetime
+start_time = datetime.now()
+
 import flask
 from flask import request, jsonify
 from flask_cors import CORS
@@ -121,6 +124,6 @@ def recommend(**kargs):
     }
     return jsonify(api_return)
 
-
-print("Server started !")
+end_time = datetime.now()
+print(f"Server started at {end_time.strftime('%Y-%m-%d %H:%M:%S')}, loading time = {end_time - start_time}")
 app.run(host='0.0.0.0')
