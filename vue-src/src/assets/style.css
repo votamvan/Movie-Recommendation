@@ -1,0 +1,142 @@
+.full-bg{
+			background-image: url("landing-page.png");
+			background-size: 100%;
+			background-repeat: repeat-y;
+}
+.page{
+        min-height: 800px
+
+}
+.navbar-theme {
+	background-color: rgba(0,0,0,0);
+}
+.navbar-theme{
+	border-color: rgba(255, 255, 255, 0);
+}
+.navbar-theme a{
+  color: #ffffff ! important;
+    font-size: 18px;
+    font-weight: bold;
+}
+.navbar-brand:before{
+	background-image: url("logo.png");
+}
+.navbar-brand:hover{
+	text-decoration: underline;
+    font-size: 30px ! important;
+}
+.navbar-brand{
+	text-decoration: underline;
+    font-size: 30px ! important;
+}
+.body-theme{
+	    background: #000000;
+    color: #fff;
+}
+.main-body{
+	padding-top: 43px;
+}
+.footer-theme{
+	background: #000000;
+}
+.mt-5{
+	margin-top: 5px;
+}
+.mt-10{
+	margin-top: 10px;
+}
+.mt-15{
+	margin-top: 15px;
+}
+.mt-30{
+	margin-top: 30px;
+}
+.mt-100{
+	margin-top: 100px
+}
+.mt-200{
+	margin-top: 200px
+}
+
+.mb-5{
+	margin-bottom: 5px;
+}
+.mb-10{
+	margin-bottom: 10px;
+}
+.mb-15{
+	margin-bottom: 15px;
+}
+.mb-30{
+	margin-bottom: 30px;
+}
+.mb-100{
+	margin-bottom: 100px
+}
+.mb-200{
+	margin-bottom: 200px
+}
+.panel-theme{
+	background-color: rgba(255, 255, 255, 0);
+}
+.panel-theme .panel-heading{
+	background-color: rgba(245, 245, 245, 0.63);
+}
+.form-theme .form-control{
+	background-color: rgba(255, 255, 255, 0.7);
+}
+a{
+	color: #fff;
+}
+a:hover{
+	color: #fff;
+	text-decoration: underline;
+	
+}
+.navbar-theme .dropdown-menu{
+	background: rgba(43, 43, 43, 0.68);
+    border: 1px solid;
+}
+.navbar-theme .dropdown-menu a:hover{
+	background:rgba(255, 255, 255, 0.3);
+}
+/* --- rate css-- */
+.checked {
+	color: orange;
+}
+.movie-image{
+height: 300px;
+width: 100%;
+object-fit: cover;
+}
+.similar-movie-recommended{
+max-height: 1200px;
+overflow-y: scroll;
+}
+
+.blinking{
+    animation:blinkingText 1.7s infinite;
+}
+@keyframes blinkingText{
+    0%{     color: #eaf0f3;    }
+    49%{    color: rgb(22, 212, 54); }
+    30%{    color: transparent; }
+    80%{    color:transparent;  }
+    100%{   color: #FFD700;    }
+}
+#loader{
+	position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #ffffff82;
+    top: 0;
+    display: none;
+    font-size: 30px;
+    text-align: center;
+    text-align: -webkit-center;
+    padding-top: 400px;
+}
+.text-bold{
+	font-weight: bold;
+}
