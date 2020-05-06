@@ -20,7 +20,7 @@ API_RETURN = dict(
         "data": {
             "userId": 44,
             "email": "obama@gmail.com",
-            "displayName": "admin"
+            "displayName": "Admin"
         }
     },
     LOGIN_FAIL = {
