@@ -27,7 +27,7 @@ API_RETURN = dict(
     },
     RATING = {
         "status": "success",
-        "data": 0.85
+        "data": 3.0
     },
     UPDATE_RATING_OK = {
         "status": "success"
@@ -71,6 +71,17 @@ def login(**kargs):
         password = data["password"]
         if username == "admin" and password == "cs582":
             return jsonify(API_RETURN["LOGIN_SUCCESS"])
+        elif username == "thuy" and password == "cs582":
+            out = {
+                "status": "success",
+                "message": "login successfully",
+                "data": {
+                    "userId": 45,
+                    "email": "thuypham@miu.edu",
+                    "displayName": "Thuy Pham"
+                }
+            }
+            return jsonify(out)
     except:
         print("catch error")
     return jsonify(API_RETURN["LOGIN_FAIL"])

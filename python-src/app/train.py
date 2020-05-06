@@ -128,6 +128,8 @@ def df2api(df):
         for col in columns:
             if col == 'id':
                 rec_json.update({"movieId" : row[col]})
+            elif col == 'score':
+                rec_json.update({col: round(row[col], 1)})
             else:
                 rec_json.update({col: row[col]})
         imdb_id = rec_json["imdb_id"]
