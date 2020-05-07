@@ -20,6 +20,8 @@ credit_df = pd.read_csv(path + "credits.csv")
 movie_df = pd.read_csv(path + "movies_metadata.csv")
 keyword_df = pd.read_csv(path + "keywords.csv")
 rating_df = pd.read_csv(path + 'ratings_small.csv')
+rating_df.userId = pd.to_numeric(rating_df.userId)
+rating_df.movieId = pd.to_numeric(rating_df.movieId)
 
 # pre-processing data
 keyword_df['id'] = keyword_df['id'].astype('int')
@@ -63,27 +65,30 @@ movie_df['director'] = movie_df['crew'].apply(get_director)
 for col in ['cast', 'keywords', 'genres']:
     movie_df[col] = movie_df[col].apply(get_list)
 
-def clean_data(x):
-    if isinstance(x, list):
-        return [str.lower(i.replace(" ", "")) for i in x]
-    return str.lower(x.replace(" ", ""))
-
-for col in ['cast', 'keywords', 'director', 'genres']:
-    movie_df[col] = movie_df[col].apply(clean_data)
-
 # create new feauture SOUP
-def create_soup(x):
-    soup = ""
-    if len(x['keywords']) > 0:
-      soup += ' '.join(x['keywords']) + ' '
-    if len(x['cast']) > 0:
-      soup += ' '.join(x['cast']) + ' '
-    soup += x['director'] + ' '
-    if len(x['genres']) > 0:
-      soup += ' '.join(x['genres'])
-    return soup
+def create_soup(df):
+    def _clean_data(x):
+        if isinstance(x, list):
+            return [str.lower(i.replace(" ", "")) for i in x]
+        return str.lower(x.replace(" ", ""))
 
-movie_df['soup'] = movie_df.apply(create_soup, axis=1)
+    def _create_soup(x):
+        soup = ""
+        if len(x['keywords']) > 0:
+          soup += ' '.join(x['keywords']) + ' '
+        if len(x['cast']) > 0:
+          soup += ' '.join(x['cast']) + ' '
+        soup += x['director'] + ' '
+        if len(x['genres']) > 0:
+          soup += ' '.join(x['genres'])
+        return soup
+
+    temp_df = pd.DataFrame()
+    for col in ['cast', 'keywords', 'director', 'genres']:
+        temp_df[col] = movie_df[col].apply(_clean_data)
+    return temp_df.apply(_create_soup, axis=1)
+
+movie_df['soup'] = create_soup(movie_df)
 count_matrix = CountVectorizer(stop_words='english').fit_transform(movie_df['soup'])
 # tfidf_matrix = TfidfVectorizer(stop_words='english').fit_transform(movie_df['soup'])
 
@@ -139,7 +144,7 @@ def df2api(df):
         top10.append(rec_json)
     return top10
 
-
+# SVD recommendation algorithm
 reader = Reader()
 data = Dataset.load_from_df(rating_df[['userId', 'movieId', 'rating']], reader)
 svd = SVD()
@@ -162,7 +167,6 @@ def get_top_n(predictions, n=15):
     return top_n
 
 top10_svd = get_top_n(predictions)
-
 
 def _top10_recommend(user_id, df):
     movie_indices = []
