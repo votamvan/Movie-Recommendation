@@ -1,3 +1,4 @@
+import sys
 from datetime import datetime
 start_time = datetime.now()
 
@@ -6,7 +7,8 @@ from flask import request, jsonify
 from flask_cors import CORS
 
 
-from train import top10_movies, top_similar_movies, top10_recommend
+from train import top10_movies, top_similar_movies, top10_recommend, top10_recommend_by_name
+from train import predict_rating
 
 app = flask.Flask(__name__)
 CORS(app)
@@ -38,6 +40,9 @@ API_RETURN = dict(
     UPDATE_RATING_FAIL = {
         "status": "error",
         "message": "userId, movieId or rating is missing"
+    },
+    API_ERROR = {
+        "status": "error"
     }
 )
 
@@ -57,7 +62,7 @@ def updaterating(**kargs):
         rating = data["rating"]
         return jsonify(API_RETURN["UPDATE_RATING_OK"])
     except:
-        print("catch error")
+        print("Unexpected error:", sys.exc_info()[0])
     return jsonify(API_RETURN["UPDATE_RATING_FAIL"])
 
 # real API
@@ -86,7 +91,7 @@ def login(**kargs):
             }
             return jsonify(out)
     except:
-        print("catch error")
+        print("Unexpected error:", sys.exc_info()[0])
     return jsonify(API_RETURN["LOGIN_FAIL"])
 
 @app.route('/api/v0/toptrending/<nation>', methods=['POST'])
@@ -123,6 +128,35 @@ def recommend(**kargs):
         "data": top10
     }
     return jsonify(api_return)
+
+
+@app.route('/api/v0/topsimilarbyname', methods=['POST'])
+def topsimilarbyname(**kargs):
+    try:
+        print(request.data)
+        data = request.get_json()
+        movie_name = data["movie_name"]
+        top10 = top10_recommend_by_name(movie_name)
+        api_return = {
+            "status": "success",
+            "data": top10
+        }
+        return jsonify(api_return)
+    except:
+        print("Unexpected error:", sys.exc_info()[0])
+    return jsonify(API_RETURN["API_ERROR"])
+
+@app.route('/api/v0/predictrating', methods=['POST'])
+def predictrating(**kargs):
+    try:
+        print(request.data)
+        data = request.get_json()
+        user_id = int(data["user_id"])
+        movie_id = int(data["movie_id"])
+        return jsonify(predict_rating(user_id, movie_id))
+    except:
+        print("Unexpected error:", sys.exc_info()[0])
+    return jsonify(API_RETURN["API_ERROR"])
 
 end_time = datetime.now()
 print(f"Server started at {end_time.strftime('%Y-%m-%d %H:%M:%S')}, loading time = {end_time - start_time}")

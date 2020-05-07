@@ -182,7 +182,27 @@ def top10_recommend(user_id):
     return df2api(top10)
 
 
+def top10_recommend_by_name(movie_name):
+    df = movie_df[movie_df.title == movie_name].id
+    if df.shape[0] == 0:
+        return {
+            "status": "error",
+            "message": "movie name not found"
+        }
+    return top_similar_movies(df[0])
 
 
+def predict_rating(user_id, movie_id):
+    if user_id not in top10_svd:
+        return {
+            "status": "error",
+            "message": "user id not found"
+        }
+    pred = svd.predict(user_id, movie_id)
+    print(pred)
+    return {
+        "status": "success",
+        "data": pred.est
+    }
 
 
