@@ -1,5 +1,5 @@
 <template>
-  <div class="page mt-200">
+  <div class="page mt-100">
     <div class="page">
       <div class="container-fluid">
         <div class="row">
@@ -71,10 +71,10 @@
               </div>
             </div>
           </div>
-          <div class="col-sm-2">
+          <div class="row-sm-3">
             <h3 class="col-sm-12">Similar Movies</h3>
-            <div class="row similar-movie-recommended">
-              <div class="col-sm-12 mb-30" v-for="(api_data,index) in api_datas" :key="index">
+              <div class="col-sm-1" v-for="(api_data,index) in api_datas" :key="index">
+                <div class="row-sm-3">
                 <router-link :to="{path: '/details/' + api_data.movieId}">
                   <img
                     :alt="api_data.title"
@@ -84,6 +84,7 @@
                   />
                 </router-link>
               </div>
+            
             </div>
           </div>
         </div>

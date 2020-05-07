@@ -52,11 +52,10 @@
               </p>
             </div>
             <div class="card-footer py-4">
-              <a
-                href="https://www.youtube.com/watch?v=A-yvybAaPks/"
-                target="_blank"
-                class="blinking"
-              >See Trailer &raquo;</a>
+              <a href="https://www.youtube.com/watch?v=A-yvybAaPks/" target="_blank" class="blinking" >See Trailer &raquo;</a>
+               
+               
+              
             </div>
           </div>
         </div>

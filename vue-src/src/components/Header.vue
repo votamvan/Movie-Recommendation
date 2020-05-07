@@ -3,7 +3,7 @@
     <div class="container">
       <div class="navbar-header">
         <router-link class="navbar-brand" to="/">
-          <div style="margin-left:300px">Home</div>
+          <h3 style="margin-left:700px;margin-top:1px;padding:0px">Home</h3 >
         </router-link>
       </div>
       <ul class="nav navbar-nav navbar-right">
