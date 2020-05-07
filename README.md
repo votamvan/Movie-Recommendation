@@ -10,4 +10,4 @@ Team:
 * Yared Geberetsadik Beyene - 110466   
 
 Project Colab URL: https://colab.research.google.com/drive/1bFKgCUKqSsoXzlMR2jA0N84506Wx1aB9   
-Dataset: https://grouplens.org/datasets/movielens/latest/
+Dataset: https://www.kaggle.com/rounakbanik/the-movies-dataset
