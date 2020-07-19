@@ -1,5 +1,7 @@
 # Project 2: Movie-Recommendation
 
+# Run live demoe at http://104.154.84.211/ with login credential: admin/cs582
+
 Professor: Mohamed Abdelrazik
 
 Team:
