@@ -1,6 +1,6 @@
 # Project 2: Movie-Recommendation
 
-# Run live demo at http://104.154.84.211/ (user: admin, password: cs582)
+# Run live demo at http://104.154.84.211/ (login: admin/cs582)
 
 Professor: Mohamed Abdelrazik
 
