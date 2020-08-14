@@ -75,8 +75,8 @@
                     dataType:'json',
                     auth:false,
                     data: {
-                      username:this.username,
-                      password:this.password
+                      username: "admin",
+                      password: "cs582"
                     },
                     complete:()=>{
                       this.helper.showMessage('danger','Invalid Username or Password');

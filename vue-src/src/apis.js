@@ -1,7 +1,6 @@
 module.exports = class Api {
 	getHostUrl(){
-		// return 'https://mighty-escarpment-32961.herokuapp.com';
-		return 'http://ec2-18-222-249-229.us-east-2.compute.amazonaws.com:5000';
+		return 'http://104.154.84.211:5000';
 	}
 	getApiVersion(){
 		return 'v0';
