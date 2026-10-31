@@ -1,49 +1,32 @@
 {
-  "name": "vue-src",
-  "version": "0.1.0",
+  "name": "movie-recommendation-web",
+  "version": "0.2.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "serve": "vite --host 0.0.0.0 --port 8080",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0 --port 8080",
+    "lint": "eslint . --max-warnings 0"
   },
   "dependencies": {
-    "core-js": "^3.6.4",
-    "jquery": "^3.5.0",
-    "vue": "^2.6.11",
-    "vue-router": "^3.1.6"
+    "vue": "3.5.44",
+    "vue-router": "5.4.0",
+    "bootstrap": "5.3.8",
+    "bootstrap-icons": "1.13.2"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "~5.0.8",
-    "@vue/cli-plugin-eslint": "~5.0.8",
-    "@vue/cli-service": "~5.0.8",
-    "babel-eslint": "^10.1.0",
-    "eslint": "^7.32.0",
-    "eslint-plugin-vue": "^8.7.1",
-    "vue-template-compiler": "^2.6.11"
+    "vite": "8.3.5",
+    "@vitejs/plugin-vue": "6.0.10",
+    "eslint": "10.14.0",
+    "@eslint/js": "10.0.1",
+    "eslint-plugin-vue": "10.12.0",
+    "globals": "17.13.0"
   },
-  "eslintConfig": {
-    "root": true,
-    "env": {
-      "node": true
-    },
-    "extends": [
-      "plugin:vue/essential",
-      "eslint:recommended"
-    ],
-    "parserOptions": {
-      "parser": "babel-eslint"
-    },
-    "rules": {
-      "vue/multi-word-component-names": "off"
-    }
-  },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "not dead"
-  ],
   "engines": {
-    "node": ">=22 <25"
+    "node": ">=26.13.0 <27"
+  },
+  "overrides": {
+    "minimatch": "^11.0.1"
   }
 }

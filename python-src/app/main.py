@@ -1,5 +1,6 @@
 """Local movie API with persistent accounts, sessions and ratings."""
 from contextlib import contextmanager
+import hashlib
 import math
 import os
 import secrets
@@ -9,6 +10,8 @@ from pathlib import Path
 
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from werkzeug.security import check_password_hash, generate_password_hash
 from train import catalog, top10_movies, top10_recommend, top_similar_movies
 from train import top10_recommend_by_name
@@ -16,6 +19,9 @@ from train import top10_recommend_by_name
 
 def create_app(database_path=None):
     app = Flask(__name__)
+    app.config['MAX_CONTENT_LENGTH'] = 16 * 1024
+    limiter = Limiter(get_remote_address, app=app, storage_uri='memory://',
+                      default_limits=['120 per minute'])
     CORS(app, origins=os.environ.get('FRONTEND_ORIGIN', 'http://localhost:8080').split(','))
     app.config['DATABASE'] = str(database_path or os.environ.get('MOVIE_DATABASE') or
                                Path(__file__).resolve().parent.parent / 'instance' / 'movies.sqlite3')
@@ -46,12 +52,21 @@ def create_app(database_path=None):
     def error(message, status=400):
         return jsonify(status='error', message=message), status
 
+    def token_digest(token):
+        return hashlib.sha256(token.encode()).hexdigest()
+
+    # Upgrade existing persisted sessions without changing their client tokens.
+    with connect() as database:
+        for row in database.execute('SELECT token FROM sessions WHERE length(token) != 64').fetchall():
+            database.execute('UPDATE sessions SET token = ? WHERE token = ?',
+                             (token_digest(row['token']), row['token']))
+
     def current_user():
         token = request.headers.get('Authorization', '').removeprefix('Bearer ')
         with connect() as database:
             return database.execute('''SELECT users.* FROM users JOIN sessions
                 ON users.id = sessions.user_id WHERE token = ? AND expires > ?''',
-                                    (token, time.time())).fetchone()
+                                    (token_digest(token), time.time())).fetchone()
 
     def payload():
         data = request.get_json(silent=True)
@@ -62,6 +77,7 @@ def create_app(database_path=None):
         return jsonify(status='success', message='Movie Recommendation API')
 
     @app.post('/api/v0/register')
+    @limiter.limit('10 per hour')
     def register():
         data = payload()
         username, password = data.get('username'), data.get('password')
@@ -79,10 +95,12 @@ def create_app(database_path=None):
         return jsonify(status='success', message='Account created. Please log in.'), 201
 
     @app.post('/api/v0/login')
+    @limiter.limit('10 per minute')
     def login():
         data = payload()
         username, password = data.get('username'), data.get('password')
-        if not isinstance(username, str) or not isinstance(password, str):
+        if (not isinstance(username, str) or not 1 <= len(username.strip()) <= 80
+                or not isinstance(password, str) or not 1 <= len(password) <= 128):
             return error('Username and password are required')
         with connect() as database:
             user = database.execute('SELECT * FROM users WHERE username = ?', (username.strip(),)).fetchone()
@@ -91,7 +109,7 @@ def create_app(database_path=None):
             token = secrets.token_urlsafe(32)
             database.execute('DELETE FROM sessions WHERE expires <= ?', (time.time(),))
             database.execute('INSERT INTO sessions VALUES (?, ?, ?)',
-                             (token, user['id'], time.time() + 7 * 86400))
+                             (token_digest(token), user['id'], time.time() + 7 * 86400))
         return jsonify(status='success', message='Login successfully', data=dict(
             userId=user['id'], displayName=user['display_name'], email='', userToken=token))
 
@@ -99,7 +117,7 @@ def create_app(database_path=None):
     def logout():
         token = request.headers.get('Authorization', '').removeprefix('Bearer ')
         with connect() as database:
-            database.execute('DELETE FROM sessions WHERE token = ?', (token,))
+            database.execute('DELETE FROM sessions WHERE token = ?', (token_digest(token),))
         return jsonify(status='success')
 
     @app.post('/api/v0/rating/<int:user_id>/<int:movie_id>')
@@ -187,6 +205,20 @@ def create_app(database_path=None):
     @app.errorhandler(404)
     def not_found(_error):
         return error('Resource not found', 404)
+
+    @app.errorhandler(413)
+    def too_large(_error):
+        return error('Request body is too large', 413)
+
+    @app.errorhandler(429)
+    def too_many_requests(_error):
+        return error('Too many requests. Please try again later.', 429)
+
+    @app.after_request
+    def security_headers(response):
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        response.headers['Cache-Control'] = 'no-store'
+        return response
 
     return app
 

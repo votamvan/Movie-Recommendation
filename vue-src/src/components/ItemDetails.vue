@@ -3,11 +3,11 @@
     <div class="page">
       <div class="container-fluid">
         <div class="row">
-          <div class="col-sm-10">
+          <div class="col-sm-10 row">
             <h3 class="col-sm-12 text-center">{{movie_details.title}}</h3>
             <div class="col-sm-8 mb-30">
               <img
-                class="img-responsive"
+                class="img-fluid"
                 :alt="movie_details.title"
                 :title="movie_details.title"
                 :src="movie_details.url"
@@ -22,39 +22,39 @@
                     alt="play btn"
                   />
                   <div>
-                    <div class="form-group"><span class="text-bold">Score:</span> {{movie_details.score}}</div>
-                    <div class="form-group"><span class="text-bold">Vote Count:</span> {{movie_details.vote_count}}</div>
+                    <div class="mb-3"><span class="text-bold">Score:</span> {{movie_details.score}}</div>
+                    <div class="mb-3"><span class="text-bold">Vote Count:</span> {{movie_details.vote_count}}</div>
                   </div>
                 </div>
               </div>
               <div class="row">
                 <div class="col-sm-12">
-                  <div class="form-group mt-15">
-                    <div class="pull-left form-group">Rate this movie</div>
-                    <div class="pull-left" style="margin-left:5px">
+                  <div class="mb-3 mt-15">
+                    <div class="float-start mb-3">Rate this movie</div>
+                    <div class="float-start" style="margin-left:5px">
                       <span role="status">{{ratingMessage}}</span>
                       <span
-                        class="fa fa-star"
+                        class="bi bi-star-fill rating-star"
                         v-on:click="one"
                         v-bind:class="{ checked: count>=1 }"
                       ></span>
                       <span
-                        class="fa fa-star"
+                        class="bi bi-star-fill rating-star"
                         v-on:click="two"
                         v-bind:class="{ checked: count>=2 }"
                       ></span>
                       <span
-                        class="fa fa-star"
+                        class="bi bi-star-fill rating-star"
                         v-on:click="three"
                         v-bind:class="{ checked: count>=3 }"
                       ></span>
                       <span
-                        class="fa fa-star"
+                        class="bi bi-star-fill rating-star"
                         v-on:click="four"
                         v-bind:class="{ checked: count>=4 }"
                       ></span>
                       <span
-                        class="fa fa-star"
+                        class="bi bi-star-fill rating-star"
                         v-on:click="five"
                         v-bind:class="{ checked: count>=5 }"
                       ></span>
@@ -64,22 +64,22 @@
               </div>
               <div class="row">
                 <div class="col-sm-12">
-                  <div class="form-group"><span class="text-bold">Director:</span> {{movie_details.director}}</div>
-                  <div class="form-group"><span class="text-bold">Genres:</span> {{movie_details.genres.join(", ")}}</div>
-                  <div class="form-group"><span class="text-bold">Tags:</span> {{movie_details.keywords.join(", ")}}</div>
-                  <div class="form-group"><span class="text-bold">OverView:</span> {{movie_details.overview}}</div>
+                  <div class="mb-3"><span class="text-bold">Director:</span> {{movie_details.director}}</div>
+                  <div class="mb-3"><span class="text-bold">Genres:</span> {{movie_details.genres.join(", ")}}</div>
+                  <div class="mb-3"><span class="text-bold">Tags:</span> {{movie_details.keywords.join(", ")}}</div>
+                  <div class="mb-3"><span class="text-bold">OverView:</span> {{movie_details.overview}}</div>
                 </div>
               </div>
             </div>
           </div>
-          <div class="row-sm-3">
+          <div class="row">
             <h3 class="col-sm-12">Similar Movies</h3>
               <div class="col-sm-1" v-for="(api_data,index) in api_datas" :key="index">
-                <div class="row-sm-3">
+                <div class="row">
                 <router-link :to="{path: '/details/' + api_data.movieId}">
                   <img
                     :alt="api_data.title"
-                    class="movie-image img-responsive"
+                    class="movie-image img-fluid"
                     :title="api_data.title"
                     :src="api_data.url"
                   />

@@ -1,33 +1,17 @@
 <template>
-  <nav class="navbar navbar-default navbar-fixed-top navbar-theme">
-    <div class="container">
-      <div class="navbar-header">
-        <router-link class="navbar-brand" to="/">
-          <h3 style="margin-left:700px;margin-top:1px;padding:0px">Home</h3 >
-        </router-link>
-      </div>
-      <ul class="nav navbar-nav navbar-right">
-        <li>
-          <router-link to="/cms/privacy-policy">Now On Cinema</router-link>
-        </li>
-        <li>
-          <router-link to="/about">About</router-link>
-        </li>
-        <li v-if="displayName == '' ">
-          <router-link to="/login">Login</router-link>
-        </li>
-        <li v-if="displayName != '' " class="dropdown" :class="{ open: dropdownOpen }">
-          <a href="#" class="dropdown-toggle" @click.prevent="dropdownOpen = !dropdownOpen">
+  <nav class="navbar navbar-expand navbar-dark fixed-top navbar-theme">
+    <div class="container flex-wrap">
+      <router-link class="navbar-brand" to="/">Home</router-link>
+      <ul class="navbar-nav ms-auto flex-row gap-3 align-items-center">
+        <li class="nav-item"><router-link class="nav-link" to="/cms/privacy-policy">Now On Cinema</router-link></li>
+        <li class="nav-item"><router-link class="nav-link" to="/about">About</router-link></li>
+        <li v-if="!displayName" class="nav-item"><router-link class="nav-link" to="/login">Login</router-link></li>
+        <li v-else class="nav-item dropdown">
+          <button class="nav-link dropdown-toggle btn" :aria-expanded="dropdownOpen" @click="dropdownOpen = !dropdownOpen">
             {{displayName}}
-            <span class="caret"></span>
-          </a>
-          <ul class="dropdown-menu">
-            <!-- <li>
-              <a href="#">Profile</a>
-            </li> -->
-            <li>
-              <a href="#" v-on:click="logout">Logout</a>
-            </li>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end" :class="{ show: dropdownOpen }">
+            <li><a href="#" class="dropdown-item" @click="logout">Logout</a></li>
           </ul>
         </li>
       </ul>
@@ -36,17 +20,13 @@
 </template>
 <script>
 export default {
-  name: "Header",
-  props: {},
+  name: 'SiteHeader',
   data() {
-    return {
-      dropdownOpen: false,
-      displayName: this.helper.getUserInfo().displayName
-    };
+    return { dropdownOpen: false, displayName: this.helper.getUserInfo().displayName };
   },
   methods: {
-    logout: function(e) {
-      e.preventDefault();
+    logout(event) {
+      event.preventDefault();
       this.helper.request({
         url: this.api.getApiUrl() + '/logout',
         complete: () => {
@@ -56,7 +36,6 @@ export default {
         }
       });
     }
-  },
-  mounted() {}
+  }
 };
 </script>

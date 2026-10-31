@@ -82,6 +82,33 @@ class ApiTest(unittest.TestCase):
         self.assertNotIn(862, [movie['movieId'] for movie in after])
         self.assertNotEqual(before, after)
 
+    def test_request_limits_and_security_headers(self):
+        response = self.client.post('/api/v0/login', json={**self.account, 'password': 'x' * 129})
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.headers['Cache-Control'], 'no-store')
+        self.assertEqual(response.headers['X-Content-Type-Options'], 'nosniff')
+        response = self.client.post('/api/v0/login', json={'username': 'x' * 20000})
+        self.assertEqual(response.status_code, 413)
+        self.assertEqual(response.get_json()['status'], 'error')
+        for _ in range(10):
+            response = self.client.post('/api/v0/login', json={**self.account, 'password': 'wrong'})
+        self.assertEqual(response.status_code, 429)
+        self.assertEqual(response.get_json()['status'], 'error')
+
+    def test_session_tokens_are_hashed_and_old_sessions_migrate(self):
+        token = self.headers['Authorization'].removeprefix('Bearer ')
+        with closing(sqlite3.connect(self.database)) as database, database:
+            stored = database.execute('SELECT token FROM sessions').fetchone()[0]
+            self.assertNotEqual(stored, token)
+            database.execute('UPDATE sessions SET token = ?', (token,))
+        self.client = create_app(self.database).test_client()
+        self.assertEqual(self.post(f'recommend/{self.user_id}').status_code, 200)
+        with closing(sqlite3.connect(self.database)) as database, database:
+            stored = database.execute('SELECT token FROM sessions').fetchone()[0]
+        self.assertNotEqual(stored, token)
+        self.post('logout')
+        self.assertEqual(self.post(f'recommend/{self.user_id}').status_code, 401)
+
     def test_expired_session(self):
         with closing(sqlite3.connect(self.database)) as database, database:
             database.execute('UPDATE sessions SET expires = 0')

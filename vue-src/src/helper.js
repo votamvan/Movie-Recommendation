@@ -1,4 +1,4 @@
-module.exports = class Helper {
+export default class Helper {
     getUserInfo() {
         const defaults = { userId: 0, displayName: '', userToken: '', email: '', messageBox: {} };
         try {

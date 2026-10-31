@@ -27,7 +27,7 @@
             <div class="card-footer py-4">
               <a
                 href="https://www.youtube.com/watch?v=4O-sMh_DO6I/"
-                target="_blank"
+                target="_blank" rel="noopener noreferrer"
                 class="blinking"
               >See Trailer &raquo;</a>
             </div>
@@ -52,7 +52,7 @@
               </p>
             </div>
             <div class="card-footer py-4">
-              <a href="https://www.youtube.com/watch?v=A-yvybAaPks/" target="_blank" class="blinking" >See Trailer &raquo;</a>
+              <a href="https://www.youtube.com/watch?v=A-yvybAaPks/" target="_blank" rel="noopener noreferrer" class="blinking" >See Trailer &raquo;</a>
                
                
               
@@ -77,7 +77,7 @@
             <div class="card-footer py-4">
               <a
                 href="https://www.youtube.com/watch?v=Ur9xLzOJNIs/"
-                target="_blank"
+                target="_blank" rel="noopener noreferrer"
                 class="blinking"
               >See Trailer &raquo;</a>
             </div>

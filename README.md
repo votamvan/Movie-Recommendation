@@ -17,7 +17,8 @@ Dataset: https://www.kaggle.com/rounakbanik/the-movies-dataset
 
 ## Run locally
 
-Requirements: Python 3.10+ and Node.js 22 or 24 with npm.
+Requirements: Python 3.15 and Node.js 26.13+ (26.x) with npm.
+The optional SVD environment is tested separately with Python 3.14.
 
 Start the API in one terminal:
 
@@ -41,7 +42,7 @@ Open http://localhost:8080, choose **Login → Create an account**, then log in
 with that account. The old shared demo credentials are no longer seeded.
 The frontend development server proxies `/api` to `http://127.0.0.1:5000`.
 Set `API_PROXY_TARGET` if the API runs elsewhere. For a production frontend
-build, set `VUE_APP_API_URL` to the API origin or configure a same-origin
+build, set `VITE_API_URL` to the API origin or configure a same-origin
 reverse proxy for `/api` (and a fallback to `index.html` for Vue routes).
 
 Accounts, password hashes, seven-day sessions and ratings persist in
@@ -56,8 +57,10 @@ The default recommender uses title, overview and genres from the included
 when present; neither is required. New users receive popular movies, then
 saved ratings influence content recommendations. Already-rated movies are
 excluded. The original SVD experiment is preserved in `app/train_svd.py` with
-its old dependencies in `requirements-svd.txt`; it is not loaded by the API.
-It still requires its original datasets and a compatible legacy environment.
+updated dependencies in `requirements-svd.txt`; it is not loaded by the API.
+Use a separate Python 3.14 environment for this research pipeline. It still
+requires its original datasets; CI verifies dependency compatibility with a
+small synthetic SVD fit/predict check.
 MovieLens and TMDB IDs require a `links.csv` mapping before integrating SVD
 results. `/api/v0/predictrating` now returns JSON with HTTP 501 to make this
 limitation explicit. Poster images are still loaded from the external image
@@ -72,7 +75,11 @@ docker compose up --build
 ```
 
 Open http://localhost:8080. The API is exposed at http://localhost:5001
-(container port 5000). A named Docker volume
+(container port 5000). Both published ports bind only to localhost. The API
+container runs Gunicorn; the web container runs the Vite development server.
+Runtime images omit pip/npm after dependency installation to reduce bundled
+package-manager vulnerabilities; rebuild images to change dependencies.
+This Compose setup is for local development. A named Docker volume
 keeps accounts and ratings across container restarts (`docker compose down`
 preserves it; `docker compose down -v` removes it).
 
@@ -81,9 +88,10 @@ preserves it; `docker compose down -v` removes it).
 GitHub Actions runs `.github/workflows/build.yml` for pull requests targeting
 `master` and pushes to `master`. After the workflow is merged into `master`,
 it can also be started manually from **Actions → Build and test → Run workflow**.
-It runs API tests with Python 3.13 and frontend lint/build with Node.js 22, then
-builds both Docker images if those checks pass. Jobs use standard Ubuntu
-runners and require no additional secrets. Images are built for validation;
+It runs API tests and dependency audits with Python 3.15, frontend audit/lint/build
+with Node.js 26, and optional SVD dependency checks with Python 3.14, then
+builds both Docker images if API and frontend checks pass. Jobs use standard
+Ubuntu 26.04 runners and require no additional secrets. Images are built for validation;
 they are not published or deployed. Results and logs appear in the PR checks
 and the Actions tab.
 
@@ -91,7 +99,7 @@ and the Actions tab.
 cd python-src
 .venv/bin/python -m unittest discover -s tests -v
 cd ../vue-src
-npm run lint -- --no-fix
+npm run lint
 npm run build
 ```
 
@@ -101,3 +109,26 @@ rating removal, missing movies and recommendations without optional datasets.
 To check the UI, create an account, try a wrong password, log in, rate a movie,
 reload its detail page, restart the API, and confirm the rating remains.
 Log out and verify that another account has its own ratings.
+
+
+## Security maintenance
+
+Run `npm audit` in `vue-src`. For Python, install
+`python-src/requirements-security.txt`, then run `pip-audit -r requirements.txt`
+and `pip-audit -r requirements-svd.txt` from `python-src`. CI runs these audits
+and fails on any reported vulnerability. Dependabot proposes weekly dependency,
+Docker base image and GitHub Actions updates.
+
+API requests are limited to 16 KiB. Login permits 10 requests per minute and
+registration permits 10 per hour per immediate client IP. Other API routes
+allow 120 requests per minute per IP. The in-memory limiter resets on restart
+and the Docker API uses one Gunicorn worker. Before deploying multiple workers
+or replicas, configure shared rate-limit storage and trusted proxy handling;
+clients behind the same proxy currently share an IP bucket.
+
+Session tokens are hashed in SQLite. Existing sessions migrate automatically;
+accounts and ratings are preserved. The frontend still stores the client bearer
+token in localStorage: use HTTPS and review cookie-based authentication before
+public deployment. The API container still runs as root to preserve compatibility
+with existing root-owned SQLite volumes. The web container runs as a non-root
+user. See `SECURITY.md` for the review scope, findings and remaining limitations.

@@ -6,7 +6,7 @@
 
 
   <!-- Footer Links -->
-  <div class="container-fluid text-center text-md-left">
+  <div class="container-fluid text-center text-md-start">
 
     <!-- Grid row -->
     <div class="row">
@@ -15,7 +15,7 @@
       <hr class="clearfix w-100 d-md-none pb-3">
 
       <!-- Grid column -->
-      <div class="col-md-5 mb-md-0 mb-3 col-md-offset-7">
+      <div class="col-md-5 mb-md-0 mb-3 offset-md-7">
 
         <!-- Links -->
         <h5 class="text-uppercase">Other Links</h5>
@@ -53,7 +53,7 @@
 </template>
 <script type="text/javascript">
     export default {
-  name: 'App',
+  name: 'SiteFooter',
   components: {
   },
   data(){
