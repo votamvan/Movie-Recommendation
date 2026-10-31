@@ -78,6 +78,15 @@ preserves it; `docker compose down -v` removes it).
 
 ## Validation
 
+GitHub Actions runs `.github/workflows/build.yml` for pull requests targeting
+`master` and pushes to `master`. After the workflow is merged into `master`,
+it can also be started manually from **Actions → Build and test → Run workflow**.
+It runs API tests with Python 3.13 and frontend lint/build with Node.js 22, then
+builds both Docker images if those checks pass. Jobs use standard Ubuntu
+runners and require no additional secrets. Images are built for validation;
+they are not published or deployed. Results and logs appear in the PR checks
+and the Actions tab.
+
 ```sh
 cd python-src
 .venv/bin/python -m unittest discover -s tests -v
