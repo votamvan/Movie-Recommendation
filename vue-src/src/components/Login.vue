@@ -1,16 +1,16 @@
 <template>
   <div class="page mt-200">
-    <div class="col-sm-4 col-sm-offset-4">
-      <div class="panel panel-default panel-theme">
-        <div class="panel-heading">{{registering ? 'Create account' : 'Login'}}</div>
-        <div class="panel-body">
+    <div class="col-sm-4 offset-sm-4">
+      <div class="card panel-theme">
+        <div class="card-header">{{registering ? 'Create account' : 'Login'}}</div>
+        <div class="card-body">
           <form @submit.prevent="doLogin">
             <p :class="alert_status" role="status">{{message}}</p>
-            <div class="form-group">
+            <div class="mb-3">
               <label for="username">Username</label>
               <input id="username" v-model.trim="username" class="form-control" required autocomplete="username">
             </div>
-            <div class="form-group">
+            <div class="mb-3">
               <label for="password">Password</label>
               <input id="password" v-model="password" type="password" class="form-control" required
                 :minlength="registering ? 8 : 1" :autocomplete="registering ? 'new-password' : 'current-password'">

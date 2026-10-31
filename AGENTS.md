@@ -2,8 +2,8 @@
 
 ## Project Structure & Module Organization
 
-- `vue-src/` contains the Vue 2 frontend. Page components live in `src/components/`; routing, API URLs, and request helpers are in `src/router.js`, `src/apis.js`, and `src/helper.js`. Static assets live in `src/assets/` and `public/`.
-- `python-src/app/main.py` implements the Flask API; `app/train.py` handles preprocessing, content similarity, and Surprise SVD recommendations. The separate `python-src/main.py` is an older stub API.
+- `vue-src/` contains the Vue 3 frontend. Page components live in `src/components/`; routing, API URLs, and request helpers are in `src/router.js`, `src/apis.js`, and `src/helper.js`. Static assets live in `src/assets/` and `public/`.
+- `python-src/app/main.py` implements the Flask API; `app/train.py` handles metadata and content recommendations; `app/train_svd.py` preserves the optional research SVD pipeline. `python-src/main.py` delegates to the maintained API.
 - `python-src/data/` contains CSV datasets; `movie-posters/` contains poster images.
 - `ML_Project2_final.ipynb` and its PDF document the research. API integration tests live in `python-src/tests/`.
 
@@ -14,8 +14,8 @@ Run commands from the indicated directory:
 - `cd vue-src && npm install`: install frontend dependencies.
 - `npm run serve`: start the frontend development server.
 - `npm run build`: generate the production frontend bundle.
-- `npm run lint`: run ESLint with Vue essential and recommended JavaScript rules; it may fix files.
-- `cd python-src && python -m pip install -r requirements.txt`: install pinned backend dependencies in an isolated environment. The Dockerfile targets Python 3.13; local runtime supports Python 3.10+.
+- `npm run lint`: run ESLint 10 with Vue essential and recommended JavaScript rules; it does not fix files.
+- `cd python-src && python -m pip install -r requirements.txt`: install pinned backend dependencies in an isolated environment. The API Dockerfile targets Python 3.15; optional SVD dependencies use a separate Python 3.14 environment.
 - `python app/main.py`: start Flask on port 5000. The default runtime loads metadata lazily without SVD training.
 - In either source directory, `sh build.sh` builds its Docker image and `sh run.sh` starts it with mounted source. Frontend Docker exposes port 8081; backend exposes 5000.
 
@@ -35,4 +35,4 @@ History uses short messages such as `Update README.md` and `add login free`, wit
 
 ## Configuration Notes
 
-The frontend development proxy targets `http://127.0.0.1:5000`; override it with `API_PROXY_TARGET`. Set `VUE_APP_API_URL` for builds that use a separate API origin. Accounts, sessions and ratings persist in ignored `python-src/instance/movies.sqlite3`. Do not commit real credentials or runtime databases.
+The frontend development proxy targets `http://127.0.0.1:5000`; override it with `API_PROXY_TARGET`. Set `VITE_API_URL` for builds that use a separate API origin. Accounts, sessions and ratings persist in ignored `python-src/instance/movies.sqlite3`. Do not commit real credentials or runtime databases.

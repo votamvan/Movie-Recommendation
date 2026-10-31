@@ -1,23 +1,22 @@
 <template>
 
   <div :class="fill_bg">
-    <Header/>
+    <SiteHeader/>
     <section class="main-body"><router-view/></section>
-    <Footer/>
+    <SiteFooter/>
   </div>
 </template>
 
 <script>
 
-import Header from './components/Header.vue'
-import Footer from './components/Footer.vue'
+import SiteHeader from './components/Header.vue'
+import SiteFooter from './components/Footer.vue'
 
-import './assets/style.css'
 export default {
   name: 'App',
   components: {
-    Header,
-    Footer
+    SiteHeader,
+    SiteFooter
     
   },
   data(){

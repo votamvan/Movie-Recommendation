@@ -1,5 +1,4 @@
-import Vue from 'vue'
-import Router from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 import Home from './components/Home.vue'
 import ItemDetails from './components/ItemDetails.vue'
 import About from './components/About.vue'
@@ -7,10 +6,10 @@ import Cms from './components/Cms.vue'
 import Login from './components/Login.vue'
 
 
-Vue.use(Router)
 
-export default new Router({
-	mode: 'history',
+
+export default createRouter({
+	history: createWebHistory(),
 	routes:[
 		{
 			path:'/',
@@ -37,6 +36,5 @@ export default new Router({
 			name:'Cms',
 			component:Cms
 		}
-	],
-	duplicateNavigationPolicy: 'reload'
+	]
 }) 

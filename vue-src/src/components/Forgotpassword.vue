@@ -1,24 +1,24 @@
 <template>
 	<div class="page mt-200">
-    <div class="col-sm-4 col-sm-offset-4">
-      <div class="panel panel-default panel-theme">
-        <div class="panel-heading">Login</div>
-        <div class="panel-body">
+    <div class="col-sm-4 offset-sm-4">
+      <div class="card panel-theme">
+        <div class="card-header">Login</div>
+        <div class="card-body">
           <div class="col-sm-12">
               <form class="form-theme" @submit="doLogin">
                 <div class="row">
-                  <div class="form-group">
+                  <div class="mb-3">
                     <label class="control-label">Username:</label>
                     <input type="text" v-model="username" name="username" class="form-control" placeholder="Username">
                   </div>
-                  <div class="form-group">
+                  <div class="mb-3">
                     <label class="control-label">Password:</label>
                     <input type="password" v-model="password" name="password" class="form-control" placeholder="Password">
                   </div>
-                  <div class="form-group">
+                  <div class="mb-3">
                     <router-link to="/forgot-password">Forgot your password?</router-link>
                   </div>
-                  <div class="form-group">
+                  <div class="mb-3">
                     <button type="submit" class="btn btn-primary">Login</button>
                   </div>
                 </div>

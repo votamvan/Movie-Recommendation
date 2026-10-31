@@ -1,19 +1,14 @@
-import Vue from 'vue'
+import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
+import Api from './apis.js'
+import Helper from './helper.js'
+import 'bootstrap/dist/css/bootstrap.min.css'
+import 'bootstrap-icons/font/bootstrap-icons.css'
+import './assets/style.css'
 
-Vue.config.productionTip = false
-
-var Api = require('./apis.js');
-let api = new Api();
-Vue.prototype.api = api;
-
-var Helper = require('./helper.js');
-let helper = new Helper();
-Vue.prototype.helper = helper;
-
-new Vue({
-	el: '#app-main',
-	router:router,
-  render: h => h(App),
-})
+const app = createApp(App)
+app.config.globalProperties.api = new Api()
+app.config.globalProperties.helper = new Helper()
+app.use(router)
+app.mount('#app-main')

@@ -3,16 +3,16 @@
       <p v-if="!helper.getUserInfo().userToken" class="text-center">
         <router-link to="/login">Log in or create an account</router-link> to see movie recommendations.
       </p>
-      <div class="container-fluid">
+      <div class="container-fluid row">
           <h3 class="col-sm-12" v-if="topTrendingMovies.length>0">Top Trending Movies</h3>
           <div class="col-sm-2 mb-30" v-for="(api_data,index) in topTrendingMovies" :key="index">
-              <router-link :to="{path: '/details/' + api_data.movieId}"><img class="movie-image img-responsive" :title="api_data.title" :src="api_data.url"></router-link>
+              <router-link :to="{path: '/details/' + api_data.movieId}"><img class="movie-image img-fluid" :title="api_data.title" :src="api_data.url"></router-link>
           </div>
       </div>
-      <div class="container-fluid">
+      <div class="container-fluid row">
           <h3 class="col-sm-12" v-if="userTopMovies.length>0">Top Recommendations For You</h3>
           <div class="col-sm-2 mb-30" v-for="(userTopMovie,index) in userTopMovies" :key="index">
-              <router-link :to="{path: '/details/' + userTopMovie.movieId}"><img class="movie-image img-responsive" :title="userTopMovie.title" :src="userTopMovie.url"></router-link>
+              <router-link :to="{path: '/details/' + userTopMovie.movieId}"><img class="movie-image img-fluid" :title="userTopMovie.title" :src="userTopMovie.url"></router-link>
           </div>
       </div>
     </div>

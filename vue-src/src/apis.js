@@ -1,6 +1,6 @@
-module.exports = class Api {
+export default class Api {
 	getHostUrl(){
-		return (process.env.VUE_APP_API_URL || '').replace(/\/$/, '');
+		return (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
 	}
 	getApiVersion(){
 		return 'v0';

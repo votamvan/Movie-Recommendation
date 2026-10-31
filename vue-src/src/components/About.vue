@@ -1,6 +1,6 @@
 <template>
 	<div class="page mt-200">
-    <div class="col-sm-4 col-sm-offset-4">
+    <div class="col-sm-4 offset-sm-4">
 	<h2>CS582 Machine Learning-Project 2</h2>
 
 <h3>Professor: Mohamed Abdelrazik</h3>

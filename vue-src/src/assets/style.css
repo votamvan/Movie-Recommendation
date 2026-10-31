@@ -140,3 +140,13 @@ overflow-y: scroll;
 .text-bold{
 	font-weight: bold;
 }
+
+/* Preserve the dark movie layout with Bootstrap 5. */
+.navbar-theme { background: #000; }
+.main-body { padding-top: 80px; }
+.panel-theme { color: #fff; border: 1px solid #666; }
+.panel-theme .card-header { background: #555; }
+.panel-theme .card-body { padding: 1.5rem; }
+.rating-star { cursor: pointer; font-size: 1.25rem; }
+.navbar-theme .dropdown-menu { background: #222; }
+.navbar-theme .dropdown-item { color: #fff; }

@@ -1,0 +1,22 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /vue-src
+    schedule:
+      interval: weekly
+  - package-ecosystem: pip
+    directory: /python-src
+    schedule:
+      interval: weekly
+  - package-ecosystem: docker
+    directory: /vue-src
+    schedule:
+      interval: weekly
+  - package-ecosystem: docker
+    directory: /python-src
+    schedule:
+      interval: weekly
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
