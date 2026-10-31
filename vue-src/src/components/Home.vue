@@ -1,5 +1,8 @@
 <template>
     <div class="page">
+      <p v-if="!helper.getUserInfo().userToken" class="text-center">
+        <router-link to="/login">Log in or create an account</router-link> to see movie recommendations.
+      </p>
       <div class="container-fluid">
           <h3 class="col-sm-12" v-if="topTrendingMovies.length>0">Top Trending Movies</h3>
           <div class="col-sm-2 mb-30" v-for="(api_data,index) in topTrendingMovies" :key="index">
@@ -32,7 +35,7 @@
         if(this.helper.getUserInfo().userId>0){
               this.helper.request({
                     type: 'post',
-                    auth:false,
+                    auth:true,
                     withData:'json',
                     url: this.api.getTopTrendingMovieApi(),
                     dataType:'json',
@@ -46,7 +49,7 @@
               })
               this.helper.request({
                     type: 'post',
-                    auth:false,
+                    auth:true,
                     withData:'json',
                     url: this.api.getUserTopMoviesApi()+'/'+this.helper.getUserInfo().userId,
                     dataType:'json',

@@ -16,8 +16,8 @@
         <li v-if="displayName == '' ">
           <router-link to="/login">Login</router-link>
         </li>
-        <li v-if="displayName != '' " class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+        <li v-if="displayName != '' " class="dropdown" :class="{ open: dropdownOpen }">
+          <a href="#" class="dropdown-toggle" @click.prevent="dropdownOpen = !dropdownOpen">
             {{displayName}}
             <span class="caret"></span>
           </a>
@@ -40,15 +40,21 @@ export default {
   props: {},
   data() {
     return {
+      dropdownOpen: false,
       displayName: this.helper.getUserInfo().displayName
     };
   },
   methods: {
     logout: function(e) {
-      this.helper.unsetUserInfo();
-      this.helper.setLocalMessage("success", "Logout successfully.");
-      window.location.href = "/login";
-      e.preventDefalt();
+      e.preventDefault();
+      this.helper.request({
+        url: this.api.getApiUrl() + '/logout',
+        complete: () => {
+          this.helper.unsetUserInfo();
+          this.helper.setLocalMessage('success', 'Logout successfully.');
+          window.location.href = '/login';
+        }
+      });
     }
   },
   mounted() {}

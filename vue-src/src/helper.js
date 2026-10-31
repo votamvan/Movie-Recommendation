@@ -1,248 +1,68 @@
 module.exports = class Helper {
-
-    userRole = {
-        user:'AUDIENCE'
-    }   
-    
-    getUserInfo () {
-            var userInfo = {
-                userId: 0,
-                displayName: '',
-                userToken: '',
-                email: '',
-                role: '',
-                profilePic: '',
-                messageBox:''
-            };
-            var userInfoLocal = JSON.parse(localStorage.getItem('userInfo'));
-            if (typeof (userInfoLocal) === 'object') {
-                if (userInfoLocal !== null) {
-                    if (typeof (userInfo.userId) !== 'undefined') {
-                        if (userInfoLocal.userId !== 0) {
-                            userInfo.userId = userInfoLocal.userId;
-                        }
-                    }
-                    if (typeof (userInfo.displayName) !== 'undefined') {
-                        if (userInfoLocal.displayName !== '') {
-                            userInfo.displayName = userInfoLocal.displayName;
-                        }
-                    }
-                    if (typeof (userInfo.userToken) !== 'undefined') {
-                        if (userInfoLocal.userToken !== '') {
-                            userInfo.userToken = userInfoLocal.userToken;
-                        }
-                    }
-                    if (typeof (userInfo.email) !== 'undefined') {
-                        if (userInfoLocal.email !== '') {
-                            userInfo.email = userInfoLocal.email;
-                        }
-                    }
-                    if (typeof (userInfo.role) !== 'undefined') {
-                        if (userInfoLocal.role !== '') {
-                            userInfo.role = userInfoLocal.role;
-                        }
-                    }
-                    if (typeof (userInfo.profilePic) !== 'undefined') {
-                        if (userInfoLocal.profilePic !== '') {
-                            userInfo.profilePic = userInfoLocal.profilePic;
-                        }
-                    }
-                    if (typeof (userInfo.messageBox) !== 'undefined') {
-                        if (typeof(userInfoLocal.messageBox.status) != 'undefined') {
-                            userInfo.messageBox = userInfoLocal.messageBox;
-                            if(typeof(userInfo.messageBox.status) == 'undefined'){
-                                userInfo.messageBox['status'] == '';
-                                userInfo.messageBox['message'] == '';
-                            }
-                        }
-                    }
-                }
-
-            }
-            return userInfo;
-    }
-    setLocalMessage(status,message){
-        var userInfo = this.getUserInfo();
-        userInfo['messageBox'] = {
-            status:status,
-            message:message
-        };
-        this.setUserInfo(userInfo);
-    }
-    getLocalMessage(){
-        var userInfo = this.getUserInfo();
-        var messageBox = userInfo.messageBox;
-        userInfo['messageBox'] = {};
-        this.setUserInfo(userInfo);
-        if(typeof(messageBox.status) != 'undefined'){
-            if(messageBox.status == 'success'){
-                messageBox['alert_status'] = 'alert alert-success';
-            }else if(messageBox.status == 'danger'){
-                messageBox['alert_status'] = 'alert alert-danger';
-            }
-        }        
-        return messageBox;
-    }
-    setUserNewToken = function (newToken) {
-        var userInfo = this.getUserInfo();
-        if (userInfo.identity != '') {
-            var userInfoLocal = JSON.parse(localStorage.getItem('userInfo'));
-            userInfoLocal.userToken = newToken;
-            this.setUserInfo(userInfoLocal);
+    getUserInfo() {
+        const defaults = { userId: 0, displayName: '', userToken: '', email: '', messageBox: {} };
+        try {
+            const stored = JSON.parse(localStorage.getItem('userInfo'));
+            return Object.assign(defaults, stored && typeof stored === 'object' ? stored : {});
+        } catch (error) {
+            localStorage.removeItem('userInfo');
+            return defaults;
         }
+    }
+    setUserInfo(data) {
+        localStorage.setItem('userInfo', JSON.stringify(data));
     }
     unsetUserInfo() {
         localStorage.removeItem('userInfo');
     }
-    setUserInfo(datas) {  
-        if(typeof(datas.messageBox) == 'undefined'){
-            datas['messageBox'] = {}
-        }
-        localStorage.setItem('userInfo', JSON.stringify(datas));
+    setLocalMessage(status, message) {
+        const user = this.getUserInfo();
+        user.messageBox = { status, message };
+        this.setUserInfo(user);
     }
-    getFormData(formData){
-
-        // formData.append('identity',this.getUserInfo().identity);
-        // formData.append('displayName',this.getUserInfo().displayName);
-
-        return formData;
+    getLocalMessage() {
+        const user = this.getUserInfo();
+        const message = user.messageBox || {};
+        user.messageBox = {};
+        this.setUserInfo(user);
+        message.alert_status = message.status === 'success' ? 'alert alert-success' : 'alert alert-danger';
+        return message;
     }
-    request(params) {
-
-            if (typeof (params) === 'undefined') {
-                alert('Empty parameter found.');
-
-            } else {
-                if (typeof (params.url) === 'undefined') {
-                    alert('Api url is missing');
-                } else {
-                    
-                    var method = 'POST';
-                    if (typeof (params.type) !== 'undefined') {
-                        method = params.type;
-                    }
-                    params.type = method;
-                    if (typeof(params.success) == 'function') {//start
-
-                        if (window.$) {
-
-                            var ajaxParms = {};
-                            ajaxParms['dataType'] = 'json';
-
-                            if(typeof(params.auth) == 'undefined'){
-                                ajaxParms['headers'] = {
-                                    'Authorization':'Bearer '+this.getUserInfo().userToken
-                                };
-                            }else{
-                                if(params.auth == true){
-                                    ajaxParms['headers'] = {
-                                        'Authorization':'Bearer '+this.getUserInfo().userToken
-                                    };
-
-                                }
-                                
-                            }
-                            ajaxParms['beforeSend'] = ()=>{
-                                document.querySelector('#loader').style.display = 'block';
-                            };
-                            ajaxParms['url'] = params.url;
-                            ajaxParms['type'] = params.type;
-                            ajaxParms['xhr'] = function () {
-                                                    var myXhr = window.$.ajaxSettings.xhr();
-                                                    if (typeof(params.uploadProgress) == 'function') {
-                                                        if (myXhr.upload) {
-                                                            myXhr.upload.addEventListener('progress', function (e) {
-                                                                var uploaded = e.loaded;
-                                                                var total_size = e.total;
-                                                                var percentage = (uploaded / total_size) * 100;
-                                                                if (percentage > 100) {
-                                                                    percentage = 100;
-                                                                }
-                                                                var return_datas = {
-                                                                    uploaded: uploaded,
-                                                                    total_size: total_size,
-                                                                    uploading_percent: percentage,
-                                                                };
-                                                                params.uploadProgress(return_datas);
-                                                            }, false);
-                                                        }
-                                                    }
-                                                    return myXhr;
-                                                };
-                            ajaxParms['complete'] = (resp) =>{
-                                    document.querySelector('#loader').style.display = 'none';
-                                    
-                                    if (typeof(params.complete) == 'function') {
-                                        if(resp.status == 403){//credials
-                                            params.complete(resp);
-                                        }else if(resp.status == 404){
-                                            this.showMessage('danger','Record not found.');
-                                        }else if(resp.status == 400){
-                                            this.showMessage('danger','Bad Request found.');
-                                        }else if(resp.status == 500){
-                                            this.showMessage('danger','Internal Server Error.');
-                                        }
-                                        
-                                    }else{
-                                        if(resp.status == 403){//credials
-                                            this.showMessage('danger','Username or password is not matched.');
-                                        }else if(resp.status == 404){
-                                            this.showMessage('danger','Record not found.');
-                                        }else if(resp.status == 400){
-                                            this.showMessage('danger','Bad Request found.');
-                                        }
-                                    }
-                                    
-                                };
-                            ajaxParms['success'] = (resp) =>{
-
-                                    if (typeof(params.success) == 'function') {
-                                        params.success(resp);
-                                    }
-                            };
-                            if (typeof(params.beforeSend) == 'function') {
-                                params.beforeSend();
-                            }
-                            if(typeof(params.withData) != 'undefined'){
-                                if(params.withData == 'json'){
-
-                                    ajaxParms['data'] = JSON.stringify(params.data);
-                                    ajaxParms['contentType'] = 'application/json';
-                                    
-                                    window.$.ajax(ajaxParms);
-                                }else{
-
-                                    ajaxParms['data'] = params.data;
-                                    ajaxParms['cache'] = false;
-                                    ajaxParms['contentType'] = false;
-                                    ajaxParms['processData'] = false;
-                                    window.$.ajax(ajaxParms);
-                                }
-                            }else{//default is form data
-
-                                ajaxParms['data'] = params.data;
-                                ajaxParms['cache'] = false;
-                                ajaxParms['contentType'] = false;
-                                ajaxParms['processData'] = false;
-                                window.$.ajax(ajaxParms);
-                            }
-
-                            
-                        } else {
-                            console.log('jquery not loaded');
-                        }
-
-                    }//end      
-
-                }
+    showMessage(status, message) {
+        window.alert(message);
+    }
+    async request(params) {
+        const loader = document.querySelector('#loader');
+        this.pending = (this.pending || 0) + 1;
+        if (loader) loader.style.display = 'block';
+        try {
+            const headers = { 'Content-Type': 'application/json' };
+            const token = this.getUserInfo().userToken;
+            if (params.auth !== false && token) headers.Authorization = 'Bearer ' + token;
+            const response = await fetch(params.url, {
+                method: params.type || 'POST', headers,
+                body: params.data === undefined ? undefined : JSON.stringify(params.data)
+            });
+            const data = await response.json();
+            if (response.status === 401 && params.auth !== false) {
+                this.unsetUserInfo();
+                window.location.href = '/login';
+                return;
             }
-    }
-
-    scroll_to_bottom(selector) {
-        var objDiv = document.querySelector(selector);
-        if (objDiv) {
-            objDiv.scrollTop = objDiv.scrollHeight;
+            if (!response.ok || data.status === 'error') {
+                if (params.error) params.error(data);
+                else this.showMessage('danger', data.message || 'Request failed.');
+                return;
+            }
+            if (params.success) params.success(data);
+        } catch (error) {
+            const data = { status: 'error', message: 'Cannot reach the server. Please try again.' };
+            if (params.error) params.error(data);
+            else this.showMessage('danger', data.message);
+        } finally {
+            this.pending--;
+            if (loader && this.pending === 0) loader.style.display = 'none';
+            if (params.complete) params.complete();
         }
     }
-
 }

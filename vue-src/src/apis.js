@@ -1,6 +1,6 @@
 module.exports = class Api {
 	getHostUrl(){
-		return 'http://104.154.84.211:5000';
+		return (process.env.VUE_APP_API_URL || '').replace(/\/$/, '');
 	}
 	getApiVersion(){
 		return 'v0';
