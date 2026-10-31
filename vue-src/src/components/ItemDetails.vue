@@ -32,6 +32,7 @@
                   <div class="form-group mt-15">
                     <div class="pull-left form-group">Rate this movie</div>
                     <div class="pull-left" style="margin-left:5px">
+                      <span role="status">{{ratingMessage}}</span>
                       <span
                         class="fa fa-star"
                         v-on:click="one"
@@ -94,20 +95,19 @@
 </template>
 <script type="text/javascript">
 export default {
-  name: "Home",
+  name: "ItemDetails",
   components: {},
   data() {
-    if (this.helper.getUserInfo().userId > 0) {
-      return {
-        movie_details: {},
-        api_datas: [],
-        movieId: 0,
-        count: 0,
-        userId: this.helper.getUserInfo().userId
-      };
-    } else {
-      window.location.href = "/";
-    }
+    return {
+      movie_details: { genres: [], keywords: [] },
+      ratingBusy: false,
+      ratingReady: false,
+      ratingMessage: '',
+      api_datas: [],
+      movieId: 0,
+      count: 0,
+      userId: this.helper.getUserInfo().userId
+    };
   },
   watch: {
     $route(to) {
@@ -116,108 +116,67 @@ export default {
     }
   },
   methods: {
-    fetchOldRatingInfo: function() {
-      if (this.userId > 0) {
-        this.movieId = this.$route.params.id;
-        this.helper.request({
-          type: "post",
-          auth: false,
-          withData: "json",
-          url: this.api.getRatingApi() + "/" + this.userId + "/" + this.movieId,
-          dataType: "json",
-          success: (resp) => {
-            if (typeof resp.data != "undefined") {
-              this.count = resp.data;
-            }
-          }
-        });
-      }
-    },
-    callApi: function() {
-      this.movieId = this.$route.params.id;
-      this.helper.request({
-        type: "post",
-        auth: false,
-        withData: "json",
-        url: this.api.getTopSimilarMovieApi() + "/" + this.movieId,
-        dataType: "json",
-        success: (resp) => {
-
-          if (resp.status == "error") {
-            window.location.href = "/";
-          } else {
-            this.movie_details = resp.data.movie_details;
-            
-            console.log(this.movie_details)
-
-            this.api_datas = resp.data.other_similar_movies;
-            this.fetchOldRatingInfo();
-          }
-        }
-      });
-    },
-    rateThisMovie: function() {
-      this.movieId = this.$route.params.id;
-      this.helper.request({
-        type: "post",
-        auth: false,
-        withData: "json",
-        url: this.api.getUpdateRatingApi(),
-        data: {
-          userId: this.userId,
-          movieId: this.movieId,
-          rating: this.count
+    async callApi() {
+      const movieId = this.$route.params.id;
+      this.movieId = movieId;
+      this.count = 0;
+      this.ratingReady = false;
+      this.ratingMessage = '';
+      await this.helper.request({
+        url: this.api.getTopSimilarMovieApi() + '/' + movieId,
+        success: (response) => {
+          if (this.$route.params.id !== movieId) return;
+          this.movie_details = response.data.movie_details;
+          this.api_datas = response.data.other_similar_movies;
         },
-        dataType: "json",
-        success: (resp) => {
-          console.log(resp);
+        error: (response) => {
+          if (this.$route.params.id === movieId) this.ratingMessage = response.message;
+        }
+      });
+      if (this.$route.params.id !== movieId) return;
+      await this.helper.request({
+        url: this.api.getRatingApi() + '/' + this.userId + '/' + movieId,
+        success: (response) => {
+          if (this.$route.params.id !== movieId) return;
+          this.count = response.data;
+          this.ratingReady = true;
+        },
+        error: (response) => {
+          if (this.$route.params.id === movieId) this.ratingMessage = response.message;
         }
       });
     },
-    one: function() {
-      this.isActive = !this.isActive ? true : false;
-
-      if (this.count == 1) {
-        this.count = 0;
-      } else {
-        this.count = 1;
-      }
-      this.rateThisMovie();
+    async setRating(value) {
+      if (this.ratingBusy || !this.ratingReady) return;
+      const movieId = this.$route.params.id;
+      this.ratingBusy = true;
+      this.ratingMessage = 'Saving...';
+      const next = this.count === value ? 0 : value;
+      await this.helper.request({
+        url: this.api.getUpdateRatingApi(),
+        data: { userId: this.userId, movieId, rating: next },
+        success: (response) => {
+          if (this.$route.params.id !== movieId) return;
+          this.count = response.data;
+          this.ratingMessage = 'Saved';
+        },
+        error: (response) => {
+          if (this.$route.params.id === movieId) this.ratingMessage = response.message;
+        }
+      });
+      this.ratingBusy = false;
     },
-    two: function() {
-      if (this.count == 2) {
-        this.count = 0;
-      } else {
-        this.count = 2;
-      }
-      this.rateThisMovie();
-    },
-    three: function() {
-      if (this.count == 3) {
-        this.count = 0;
-      } else {
-        this.count = 3;
-      }
-      this.rateThisMovie();
-    },
-    four: function() {
-      if (this.count == 4) {
-        this.count = 0;
-      } else {
-        this.count = 4;
-      }
-      this.rateThisMovie();
-    },
-    five: function() {
-      if (this.count == 5) {
-        this.count = 0;
-      } else {
-        this.count = 5;
-      }
-      this.rateThisMovie();
-    }
+    one() { this.setRating(1); },
+    two() { this.setRating(2); },
+    three() { this.setRating(3); },
+    four() { this.setRating(4); },
+    five() { this.setRating(5); }
   },
   mounted() {
+    if (!this.userId || !this.helper.getUserInfo().userToken) {
+      window.location.href = "/login";
+      return;
+    }
     this.callApi();
   }
 };
